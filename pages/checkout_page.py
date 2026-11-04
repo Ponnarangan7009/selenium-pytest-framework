@@ -1,6 +1,10 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from util.selenium_helpers import (
+    child_texts,
+    click_when_ready,
+    visible_element,
+    visible_text,
+)
 
 
 class CheckoutPage:
@@ -12,55 +16,48 @@ class CheckoutPage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 10)
 
     def get_heading(self, expected_text):
-        self.wait.until(
-            lambda driver: (
-                (heading := driver.find_element(*self.HEADING)).is_displayed()
-                and heading.text.strip() == expected_text
-            )
-        )
-        return self.driver.find_element(*self.HEADING).text.strip()
+        return visible_text(self.driver, self.HEADING, expected_text)
 
     def enter_customer_information(self, first_name, last_name, postal_code):
-        self.wait.until(
-            EC.visibility_of_element_located(self.FIRST_NAME)
-        ).send_keys(first_name)
+        visible_element(self.driver, self.FIRST_NAME).send_keys(first_name)
 
-        self.driver.find_element(*self.LAST_NAME).send_keys(last_name)
-        self.driver.find_element(*self.POSTAL_CODE).send_keys(postal_code)
+        visible_element(self.driver, self.LAST_NAME).send_keys(last_name)
+        visible_element(self.driver, self.POSTAL_CODE).send_keys(postal_code)
 
     def continue_to_overview(self):
-        button = self.wait.until(
-            EC.element_to_be_clickable(self.CONTINUE_BUTTON)
-        )
-        button.click()
+        click_when_ready(self.driver, self.CONTINUE_BUTTON)
 
 
 class CheckoutOverviewPage:
     HEADING = (By.CLASS_NAME, "title")
     CART_ITEMS = (By.CLASS_NAME, "cart_item")
     PRODUCT_NAME = (By.CLASS_NAME, "inventory_item_name")
+    FINISH_BUTTON = (By.ID, "finish")
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 10)
 
     def get_heading(self, expected_text):
-        self.wait.until(
-            lambda driver: (
-                (heading := driver.find_element(*self.HEADING)).is_displayed()
-                and heading.text.strip() == expected_text
-            )
-        )
-        return self.driver.find_element(*self.HEADING).text.strip()
+        return visible_text(self.driver, self.HEADING, expected_text)
 
     def get_product_names(self):
-        items = self.wait.until(
-            EC.visibility_of_all_elements_located(self.CART_ITEMS)
-        )
-        return [
-            item.find_element(*self.PRODUCT_NAME).text
-            for item in items
-        ]
+        return child_texts(self.driver, self.CART_ITEMS, self.PRODUCT_NAME)
+
+    def finish_checkout(self):
+        click_when_ready(self.driver, self.FINISH_BUTTON)
+
+
+class CheckoutCompletePage:
+    CONFIRMATION_MESSAGE = (By.CLASS_NAME, "complete-header")
+    BACK_HOME_BUTTON = (By.ID, "back-to-products")
+
+    def __init__(self, driver):
+        self.driver = driver
+
+    def get_confirmation_message(self):
+        return visible_text(self.driver, self.CONFIRMATION_MESSAGE)
+
+    def get_back_home_button_text(self):
+        return visible_text(self.driver, self.BACK_HOME_BUTTON)

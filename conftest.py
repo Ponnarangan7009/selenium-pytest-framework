@@ -12,11 +12,15 @@ def driver():
         },
     )
     browser = webdriver.Chrome(options=options)
-    yield browser
-    browser.quit()
+    try:
+        yield browser
+    finally:
+        browser.quit()
 
 @pytest.fixture()
 def safari_driver():
     browser = webdriver.Safari()
-    yield browser
-    browser.quit()
+    try:
+        yield browser
+    finally:
+        browser.quit()

@@ -1,7 +1,11 @@
 import pytest
 
 from pages.cart_page import CartPage
-from pages.checkout_page import CheckoutPage, CheckoutOverviewPage
+from pages.checkout_page import (
+    CheckoutCompletePage,
+    CheckoutOverviewPage,
+    CheckoutPage,
+)
 from pages.login_page import LoginWebPage
 from pages.products_page import ProductsPage
 
@@ -46,3 +50,8 @@ class TestCheckout:
             == "Checkout: Overview"
         )
         assert overview_page.get_product_names() == ["Sauce Labs Backpack"]
+        overview_page.finish_checkout()
+
+        complete_page = CheckoutCompletePage(driver)
+        assert complete_page.get_confirmation_message() == "Thank you for your order!"
+        assert complete_page.get_back_home_button_text() == "Back Home"
