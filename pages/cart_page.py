@@ -11,7 +11,7 @@ class CartPage:
         self.driver = driver
 
     def get_heading(self):
-        return visible_text(self.driver, self.HEADING)
+        return visible_text(self.driver, self.HEADING, "Your Cart")
 
     def get_product_names(self):
         return child_texts(self.driver, self.CART_ITEMS, self.PRODUCT_NAME)

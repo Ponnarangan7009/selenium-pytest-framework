@@ -5,6 +5,7 @@ from util.selenium_helpers import (
     click_when_ready,
     visible_elements,
     visible_text,
+    wait_until,
 )
 
 
@@ -31,7 +32,18 @@ class ProductsPage:
 
             if name == product_name:
                 button = card.find_element(*self.ADD_TO_CART_BUTTON)
+                add_button_test_id = button.get_attribute("data-test")
                 click_element_when_ready(self.driver, button)
+                remove_button_test_id = add_button_test_id.replace(
+                    "add-to-cart-", "remove-", 1
+                )
+                wait_until(
+                    self.driver,
+                    lambda browser: browser.find_elements(
+                        By.CSS_SELECTOR,
+                        f"button[data-test='{remove_button_test_id}']",
+                    ),
+                )
                 return
 
         raise AssertionError(f"Product not found: {product_name}")

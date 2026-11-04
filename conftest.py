@@ -9,6 +9,7 @@ def driver():
         {
             "credentials_enable_service": False,
             "profile.password_manager_enabled": False,
+            "profile.password_manager_leak_detection": False,
         },
     )
     browser = webdriver.Chrome(options=options)
