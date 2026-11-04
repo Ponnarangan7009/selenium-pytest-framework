@@ -3,7 +3,15 @@ import pytest
 
 @pytest.fixture()
 def driver():
-    browser = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option(
+        "prefs",
+        {
+            "credentials_enable_service": False,
+            "profile.password_manager_enabled": False,
+        },
+    )
+    browser = webdriver.Chrome(options=options)
     yield browser
     browser.quit()
 
